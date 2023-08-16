@@ -12,3 +12,8 @@ class User(AbstractUser):
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
+
+class Event(models.Model):
+    Event_Name = models.CharField(max_length=255)
+    Date = models.CharField(max_length=255)
+    user = models.CharField(max_length=255)

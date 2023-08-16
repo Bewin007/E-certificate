@@ -1,9 +1,10 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.exceptions import AuthenticationFailed
-from .serializers import UserSerializer
-from .models import User
+from .serializers import UserSerializer, EventSerializer
+from .models import User,Event
 import jwt, datetime
+from django.http import JsonResponse
 
 SECRET = '2egfi2h9urawdjfn'
 
@@ -48,10 +49,8 @@ class LoginView(APIView):
 
 
 class UserView(APIView):
-
     def get(self, request):
         token = request.COOKIES.get('jwt')
-
         if not token:
             raise AuthenticationFailed('Unauthenticated!')
 
@@ -75,6 +74,34 @@ class LogoutView(APIView):
         }
         return response
 
-class HelloWorldView(APIView):
+class Event_api_admin(APIView):
     def get(self, request):
-        return Response({"message": "Hello, World!"})
+        data = Event.objects.all()
+        serializer = EventSerializer(data,many=True)
+        return Response(serializer.data)
+    
+    def post(Self, request):
+
+        serializer = EventSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors)
+
+
+class Event_api(APIView):
+    def get(self, request, pk, b):
+        events = Event.objects.filter(user=b, Event_Name=pk)
+        serializer = EventSerializer(events, many=True)
+        return Response(serializer.data)
+
+    # def post(self,request):
+    #     serializer  = EventSerializer(data=request.data)
+    #     if serializer.is_valid():
+    #         serializer.save()
+    #         return Response(serializer.data)
+    #     else:
+    #         return Response(serializer.data)
+        
+
